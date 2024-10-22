@@ -1,0 +1,34 @@
+﻿@page "/products/new"
+
+@using BlazorApp.Models
+@using BlazorApp.Services
+@inject ISnackbar Snackbar
+
+<PageTitle>Agregar producto</PageTitle>
+
+<h3>Agregar producto</h3>
+<hr />
+
+        <MudTextField @bind-Value="product.name" Label="Nombre" Variant="Variant.Outlined"></MudTextField>
+        <MudTextField @bind-Value="product.category" Label="Categoria" Variant="Variant.Outlined"></MudTextField>
+        <MudTextField @bind-Value="product.price" Label="Precio" Variant="Variant.Outlined"></MudTextField>
+        <MudTextField @bind-Value="product.amount" Label="Cantidad" Variant="Variant.Outlined"></MudTextField>
+        <MudTextField @bind-Value="product.image" Label="Imagen" Variant="Variant.Outlined"></MudTextField>
+
+<MudButton Variant="Variant.Filled" Color="Color.Secondary" Href="products">Volver</MudButton>
+<MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Submit">Confirmar</MudButton>
+
+@code {
+    private Product product = new Product();
+    private ProductService productService = new ProductService();
+
+    private void Submit()
+    {
+        bool result = productService.CreateProduct(product);
+        if(result)
+        {
+            Snackbar.Add("Producto agregado correctamente", Severity.Success);
+        }
+    }
+
+}

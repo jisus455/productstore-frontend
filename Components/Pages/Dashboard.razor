@@ -1,0 +1,129 @@
+﻿@page "/"
+
+@using BlazorApp.Services
+@using BlazorApp.Models
+
+<PageTitle>Tablero</PageTitle>
+
+<h3>Tablero</h3>
+<hr />
+
+<div class="row">
+    <div class="col-3">
+        <MudCard Style="color: white; background: red;">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h4">@dashboard.TotalActivity</MudText>
+                </CardHeaderContent>
+                <CardHeaderActions>
+                    <MudIconButton Icon="@Icons.Material.Filled.ShoppingCart" Color="Color.Default" />
+                </CardHeaderActions>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudText>Total historial</MudText>
+            </MudCardContent>
+        </MudCard>
+    </div>
+    <div class="col-3">
+        <MudCard Style="color: white; background: limegreen;">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h4">@dashboard.TotalInsert</MudText>
+                </CardHeaderContent>
+                <CardHeaderActions>
+                    <MudIconButton Icon="@Icons.Material.Filled.ArrowUpward" Color="Color.Default" />
+                </CardHeaderActions>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudText>Total agregados</MudText>
+            </MudCardContent>
+        </MudCard>
+    </div>
+    <div class="col-3">
+        <MudCard Style="color: white; background: orange;">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h4">@dashboard.TotalUpdate</MudText>
+                </CardHeaderContent>
+                <CardHeaderActions>
+                    <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Default" />
+                </CardHeaderActions>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudText>Total modificados</MudText>
+            </MudCardContent>
+        </MudCard>
+    </div>
+    <div class="col-3">
+        <MudCard Style="color: white; background: dodgerblue;">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h4">@dashboard.TotalDelete</MudText>
+                </CardHeaderContent>
+                <CardHeaderActions>
+                    <MudIconButton Icon="@Icons.Material.Filled.ArrowDownward" Color="Color.Default" />
+                </CardHeaderActions>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudText>Total eliminados</MudText>
+            </MudCardContent>
+        </MudCard>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-8 mt-4" style="height: 300px; display: flex; flex-direction:column; gap: 35px">
+
+        <div style="padding:8px;">
+            <h5>Total historial</h5>
+            <MudProgressLinear Color="Color.Error" Size="Size.Medium" Value="@dashboard.TotalActivity" />
+        </div>
+
+        <div style="padding:8px">
+            <h5>Total agregados</h5>
+            <MudProgressLinear Color="Color.Tertiary" Size="Size.Medium" Value="@dashboard.TotalInsert" />
+        </div>
+               
+        <div style="padding:8px">
+            <h5>Total modificados</h5>
+            <MudProgressLinear Color="Color.Warning" Size="Size.Medium" Value="@dashboard.TotalUpdate" />
+        </div>
+
+        <div style="padding:8px">
+            <h5>Total eliminados</h5>
+            <MudProgressLinear Color="Color.Info" Size="Size.Medium" Value="@dashboard.TotalDelete" />
+        </div>
+
+    </div>
+
+    <div class="col-4">
+        <MudChart ChartType="ChartType.Donut" Width="100%" Height="320px" @bind-SelectedIndex="Index2" InputData="@data" InputLabels="@labels"></MudChart>
+    </div>
+</div>
+
+
+@code {
+    private ActivityService activityService = new ActivityService();
+    private BlazorApp.Models.Dashboard dashboard = new BlazorApp.Models.Dashboard();
+
+    public double[] data = { 1, 2, 3 };
+    public string[] labels = { "Agregados", "Modificados", "Eliminados" };
+    private int Index2 = -1; //default value cannot be 0 -> first selectedindex is 0.
+    int dataSize = 3;
+
+    protected override async Task OnInitializedAsync()
+    {
+        dashboard = activityService.GetDashboard();
+
+        var new_data = new double[this.dataSize];
+        new_data[0] = dashboard.TotalInsert;
+        new_data[1] = dashboard.TotalUpdate;
+        new_data[2] = dashboard.TotalDelete;
+        this.data = new_data;
+        StateHasChanged();
+    }
+
+
+
+
+}

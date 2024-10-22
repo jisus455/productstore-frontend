@@ -1,0 +1,86 @@
+﻿@page "/products"
+@using BlazorApp.Models
+@using BlazorApp.Services
+
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+
+<PageTitle>Productos</PageTitle>
+
+<h3>Productos</h3>
+<hr />
+
+
+@if (listProducts == null)
+{
+    <p><em>No se encontro productos</em></p>
+}
+else
+{
+
+    <MudButton Href="products/new" Variant="Variant.Filled" Color="Color.Primary">Agregar</MudButton>
+
+    <MudTable Items="@listProducts" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@false" LoadingProgressColor="Color.Info">
+        <HeaderContent>
+            <MudTh>Imagen</MudTh>
+            <MudTh>Nr</MudTh>
+            <MudTh>Nombre</MudTh>
+            <MudTh>Categoria</MudTh>
+            <MudTh>Precio</MudTh>
+            <MudTh>Cantidad</MudTh>
+            <MudTh>Acciones</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Imagen">
+                <MudImage Src="@context.image" Alt="Imagen" Height="50" Width="50" Fluid="true" Class="rounded-lg" />
+            </MudTd>
+            <MudTd DataLabel="Nr">@context.id</MudTd>
+            <MudTd DataLabel="Nombre">@context.name</MudTd>
+            <MudTd DataLabel="Categoria">@context.category</MudTd>
+            <MudTd DataLabel="Precio">@context.price</MudTd>
+            <MudTd DataLabel="Cantidad">@context.amount</MudTd>
+            <MudTd DataLabel="Acciones">
+                <MudButton @onclick="() => ModifyProductAsync(context)" Variant="Variant.Filled" Color="Color.Warning">Modificar</MudButton>
+                <MudButton @onclick="() => DeleteProductAsync(context)" Variant="Variant.Filled" Color="Color.Error">Eliminar</MudButton>
+            </MudTd>
+        </RowTemplate>
+    </MudTable>
+
+}
+
+@code {
+    private IEnumerable<Product> listProducts = new List<Product>();
+    private Product product = new Product();
+    ProductService productService = new ProductService();
+
+    protected async override Task OnInitializedAsync()
+    {
+        listProducts = productService.GetProducts();        
+    }
+
+    private async Task ModifyProductAsync(Product product)
+    {
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+        var parameters = new DialogParameters<DeleteProductDialog> { { "product", product } };
+        var dialog = await DialogService.ShowAsync<ModifyProductDialog>("Modificar producto", parameters, options);
+        var result = await dialog.Result;
+        if (!result.Canceled)
+        {
+            listProducts = productService.GetProducts();
+            Snackbar.Add("Producto modificado correctamente", Severity.Warning);
+        }
+    }
+
+    private async Task DeleteProductAsync(Product product)
+    {
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+        var parameters = new DialogParameters<DeleteProductDialog> { { "product", product } };
+        var dialog = await DialogService.ShowAsync<DeleteProductDialog>("Eliminar producto", parameters, options);
+        var result = await dialog.Result;
+        if (!result.Canceled)
+        {
+            listProducts = productService.GetProducts();
+            Snackbar.Add("Producto eliminado correctamente", Severity.Error);
+        }
+    }
+}

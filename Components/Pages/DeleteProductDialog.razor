@@ -1,0 +1,33 @@
+﻿@using BlazorApp.Models
+@using BlazorApp.Services
+
+<MudDialog>
+    <DialogContent>
+        ¿Estas seguro de eliminar el producto @product.name?
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancelar</MudButton>
+        <MudButton Color="Color.Error" OnClick="Submit">Confirmar</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public Product product { get; set; } = new Product();
+    private ProductService productService = new ProductService();
+
+    private void Submit()
+    {
+        bool result = productService.DeleteProduct(product.id);
+        MudDialog.Close(DialogResult.Ok(result));
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+
+    public string TextValue { get; set; }
+
+}
+

@@ -1,0 +1,66 @@
+﻿@page "/store"
+
+@using BlazorApp.Models
+@using BlazorApp.Services
+
+<PageTitle>Tienda</PageTitle>
+
+<h3>Tienda</h3>
+<hr />
+
+
+@if (listProducts == null)
+{
+    <p><em>No se encontro productos</em></p>
+}
+else
+{
+    <div class="d-flex gap-2">
+    @foreach (Product item in listProducts)
+    {
+            <MudCard Class="w-25">
+                <MudCardMedia Image="@item.image" Height="200" />
+                <MudCardContent>
+                    <MudText Typo="Typo.caption" Class="p-2 bg-primary text-white">@item.category</MudText>
+                    <MudText Typo="Typo.h5" Class="mt-2">@item.name</MudText>
+                    <MudText Typo="Typo.h6">$@item.price</MudText>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButtonGroup Color="Color.Primary" Size="Size.Small" Variant="Variant.Filled">
+                        <MudButton OnClick="() => MinusAmount(item)">-</MudButton>
+                        <MudButton>@item.amount</MudButton>
+                        <MudButton OnClick="() => PlusAmount(item)">+</MudButton>
+                    </MudButtonGroup>
+                </MudCardActions>
+            </MudCard>
+    }
+    </div>
+
+}
+
+@code {
+    private List<Product> listProducts = new List<Product>();
+    private ProductService productService = new ProductService();
+
+    protected async override Task OnInitializedAsync()
+    {
+        listProducts = productService.GetProducts();
+    }
+
+    private void PlusAmount(Product producto)
+    {
+        producto.amount += 1;
+        bool result = productService.ModifyProduct(producto);
+        listProducts = productService.GetProducts();
+        StateHasChanged();
+    }
+
+    private void MinusAmount(Product producto)
+    {
+        producto.amount -= 1;
+        bool result = productService.ModifyProduct(producto);
+        listProducts = productService.GetProducts();
+        StateHasChanged();
+    }
+
+}

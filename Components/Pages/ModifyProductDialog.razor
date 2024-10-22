@@ -1,0 +1,37 @@
+﻿@using BlazorApp.Models
+@using BlazorApp.Services
+
+<MudDialog>
+    <DialogContent>
+
+        <MudTextField @bind-Value="product.name" Label="Nombre" Variant="Variant.Outlined"></MudTextField>
+        <MudTextField @bind-Value="product.category" Label="Categoria" Variant="Variant.Outlined"></MudTextField>
+        <MudTextField @bind-Value="product.price" Label="Precio" Variant="Variant.Outlined"></MudTextField>
+        <MudTextField @bind-Value="product.amount" Label="Cantidad" Variant="Variant.Outlined"></MudTextField>
+        <MudTextField @bind-Value="product.image" Label="Imagen" Variant="Variant.Outlined"></MudTextField>
+
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancelar</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Confirmar</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public Product product { get; set; } = new Product();
+    private ProductService productService = new ProductService();
+
+    private void Submit()
+    {
+        bool result = productService.ModifyProduct(product);
+        MudDialog.Close(DialogResult.Ok(result));
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+
+}
+

@@ -1,0 +1,40 @@
+﻿@page "/history"
+
+@using BlazorApp.Models
+@using BlazorApp.Services
+
+<PageTitle>Historial</PageTitle>
+
+<h3>Historial</h3>
+<hr />
+
+
+@if (listActivity == null)
+{
+    <p><em>No se encontro historial</em></p>
+}
+else
+{
+
+    <MudDataGrid Items="@listActivity">
+        <Columns>
+            <PropertyColumn Property="x => x.Id" Title="Nr" />
+            <PropertyColumn Property="x => x.Name" Title="Nombre" />
+            <PropertyColumn Property="x => x.Amount" Title="Cantidad" />
+            <PropertyColumn Property="x => x.Operation" Title="Operation" />
+            <PropertyColumn Property="x => x.Timedate" Title="Fecha" />
+        </Columns>
+    </MudDataGrid>
+
+}
+
+@code {
+    private List<Activity> listActivity = new List<Activity>();
+    ActivityService activityService = new ActivityService();
+
+    protected override async Task OnInitializedAsync()
+    {
+        listActivity = activityService.GetActivities();
+    }
+
+}
